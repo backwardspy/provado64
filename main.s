@@ -1,9 +1,14 @@
+;;; basic header
 * = $0801
-.word (+), 10 ; load addr, BASIC line number
-.null $9e, format("%d", start) ; sys $1000
-+ .word 0 ; end of BASIC line
 
+  .word (+), 10                 ; load address, basic line number
+  .null $9e, format("%d", start); sys 4096
++
+  .word 0                       ; end of basic line
+
+;;; program code
 * = $1000
+
 start
   lda #1
   sta is_running                ; needed to resume from basic
@@ -53,9 +58,7 @@ vsync .macro                    ; await raster line 0
   bmi -
   .endm
 
-;;; select vic mode 0 (standard character mode)
-;;; uses: A
-m0 .macro
+m0 .macro                       ; select vic mode 0 (standard character mode)
   lda $d011
   and #%10011111
   sta $d011
@@ -64,7 +67,7 @@ m0 .macro
   sta $d016
   .endm
 
-m0_fillchar .macro char=#$20
+m0_fillchar .macro char=#$20    ; fill character ram with \char
   lda \char
   ldx #0
 -
@@ -73,10 +76,10 @@ m0_fillchar .macro char=#$20
   sta $0600, x
   sta $0700, x
   inx
-  bne -
+  bne -                         ; loop until X == 0 (overflow)
   .endm
 
-m0_fillcolour .macro colour=#$e
+m0_fillcolour .macro colour=#$e ; fill colour ram with \colour
   lda \colour
   ldx #0
 -
@@ -88,21 +91,22 @@ m0_fillcolour .macro colour=#$e
   bne -                         ; loop until X == 0 (overflow)
   .endm
 
-setborder .macro colour=#$e
-  lda \colour                   ; set border colour
+setborder .macro colour=#$e     ; set border colour to \colour
+  lda \colour
   sta $D020
   .endm
 
-setbackground .macro colour=#$6
-  lda \colour                   ; set bg colour
+setbackground .macro colour=#$6 ; set background colour to \colour
+  lda \colour
   sta $D021
   .endm
 
-is_running
+is_running                      ; escape flag for main loop
   .byte $01
 
 ;;; sprites
 * = $2000
+
 spr_smile
   .byte $00,$ff,$00,$07,$ff,$e0,$0f,$00
   .byte $f0,$18,$00,$18,$30,$00,$0c,$60
