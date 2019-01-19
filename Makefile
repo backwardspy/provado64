@@ -1,12 +1,18 @@
+TARGET=p64.prg
+OBJ=$(TARGET:%.prg=%.o)
+MAIN=main.s
+LST=$(MAIN:%.s=%.lst)
+EXTRA_SRC=input.s
+
 .PHONY: all clean
 
-all: c64test.prg
+all: $(TARGET)
 
-c64test.prg: c64test.o
-	pucrunch -ffast -x 2048 $< >$@
+$(TARGET): $(OBJ)
+	pucrunch -ffast -x 2048 $< > $@
 
-c64test.o: c64test.s
-	64tass -C -a -B -i -L c64test.lst $< -o $@
+$(OBJ): $(MAIN) $(EXTRA_SRC)
+	64tass -C -a -B -i -L $(LST) $< -o $@
 
 clean:
-	rm -f c64test.o c64test.prg c64test.lst
+	rm -f $(OBJ) $(LST) $(TARGET)
