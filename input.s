@@ -1,23 +1,14 @@
-  ;; CIA#1 port register A
-pra = $dc00
+pra = $dc00                     ; CIA#1 port register A
+prb = $dc01                     ; CIA#1 port register B
+ddra = $dc02                    ; CIA#1 data direction register A
+ddrb = $dc03                    ; CIA#1 data direction register B
 
-  ;; CIA#1 port register B
-prb = $dc01
-
-  ;; CIA#1 data direction register A
-ddra = $dc02
-
-  ;; CIA#1 data direction register B
-ddrb = $dc03
-
-  ;; set ddra to input and ddrb to output
-  lda #$ff
+  lda #$ff                      ; set ddra to input
   sta ddra
-  lda #0
+  lda #0                        ; set ddrb to output
   sta ddrb
 
-  ;; clear key display
-  lda #$a0
+  lda #$a0                      ; clear key display
   sta $0400
   sta $0401
   sta $0402
