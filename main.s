@@ -15,8 +15,8 @@ start
   #m0
   #m0_fillchar
 
-  #setborder #$d
-  #setbackground #$5
+  #setborder #0                 ; black out screen
+  #setbackground #0
 
   #m0_fillcolour #6
 
@@ -32,6 +32,8 @@ start
 
 mainloop
   .include "input.s"
+
+  jsr put_msg
 
   lda is_running
   beq quit                      ; quit if is_running == 0
@@ -101,8 +103,42 @@ setbackground .macro colour=#$6 ; set background colour to \colour
   sta $D021
   .endm
 
+put_msg
+  ldx #0
+-
+  lda msg, x
+  beq _cycle
+  sta $07c0, x
+  lda palette, x
+  sta $dbc0, x
+  inx
+  bne -
+_cycle
+  ldx #40
+-
+  lda palette - 1, x
+  sta palette, x
+  dex
+  bne -
+  lda palette + 40
+  sta palette
+  rts
+
 is_running                      ; escape flag for main loop
   .byte $01
+
+msg
+  .enc "screen"
+  .null "palette cycling is still cool in 2019 :)"
+  .enc "none"
+
+palette
+  .byte $d, $d, $3, $3, $e, $e, $4, $4
+  .byte $6, $6, $4, $4, $e, $e, $3, $3
+  .byte $d, $d, $3, $3, $e, $e, $4, $4
+  .byte $6, $6, $4, $4, $e, $e, $3, $3
+  .byte $d, $3, $e, $4, $6, $4, $e, $3
+  .byte $0
 
 ;;; sprites
 * = $2000
